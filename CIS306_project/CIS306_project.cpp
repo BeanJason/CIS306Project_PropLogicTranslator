@@ -158,5 +158,5 @@ string convertStatement(string statement, string& p, string& q, string& r, strin
 	
 	
 	
-	return "poopy";
+	return "poopy doesn't worky... yet";
 }
