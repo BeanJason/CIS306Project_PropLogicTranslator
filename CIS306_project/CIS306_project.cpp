@@ -146,15 +146,12 @@ string convertStatement(string statement, string& p, string& q, string& r, strin
 	
 
 	//working on separating the statement into p,q,r,s
-	/*for (int i = 0; i < statementPart1.size(); i++)
+	for (int i = 0; i < statementPart1.size(); i++)
 	{
-		if (statementPart1.at(i) == "and" || statementPart1.at(i) == "or")
-		{
-			conditionFound = true;
-		}
+
+	}
 
 
-	}*/
 	
 	
 	
