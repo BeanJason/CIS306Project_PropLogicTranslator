@@ -24,6 +24,7 @@ int main()
 
 	//read in our data from our file and store it in the statements vector
 	readfile(statements);
+	cout << "statements at 1 " << endl << statements.at(1) << endl << endl;
 
 	convertStatement(statements.at(1), p, q, s, r);
 
@@ -96,10 +97,9 @@ string convertStatement(string statement, string& p, string& q, string& r, strin
 	vector<string> statementPart1;
 	vector<string> statementPart2;
 
-	vector<string> pStatement;
-	vector<string> qStatement;
-	vector<string> rStatement;
-	vector<string> sStatement;
+	vector<int> positionFound;
+	int stopPos;
+
 
 
 	//code to separate our statement into separate words to make it easier to translate
@@ -118,42 +118,68 @@ string convertStatement(string statement, string& p, string& q, string& r, strin
 			word += statement.at(i);
 		}
 	}
-	
+
 	separatedStatement.push_back(statement.substr(lastSpacePosition, statement.length()));
 
-	//now we must separate the statement into parts
-	//split the equation into 2 when we find the word "then"
-
+	//fill a vector with the position of each condition
 	for (int i = 0; i < separatedStatement.size(); i++)
 	{
-		cout << "word at " << i << " " << separatedStatement.at(i) << endl;
-
-		if (separatedStatement.at(i) == "then")
+		if (separatedStatement.at(i) == "and" || separatedStatement.at(i) == "or" || separatedStatement.at(i) == "then" || separatedStatement.at(i) == "If")
 		{
-			cout << "found" << endl;
-			thenFound = true;
+			positionFound.push_back(i);
 		}
-		if (thenFound == false)
-		{
-			statementPart1.at(i) = separatedStatement.at(i);
-		}
-		else if (thenFound == true)
-		{
-			statementPart2.at(i) = separatedStatement.at(i);
-		}
-		
 	}
-	
 
-	//working on separating the statement into p,q,r,s
-	for (int i = 0; i < statementPart1.size(); i++)
+
+	//now that we have a value for each position of the conditions we can start adding words to each of our strings
+	//start by looping through our entire statement
+	//next if we land on one of the poitions of a condition begin another for loop to add the words from our last postion to i
+	//keep track of where we left off with the stopPos variable so we know where to begin in the next iteration
+	for (int i = 0; i <= separatedStatement.size(); i++)
 	{
-
+		if (i == positionFound.at(1))
+		{
+			for (int j = 0; j < i; j++)
+			{
+				p += separatedStatement.at(j);
+				p += " ";
+			}
+			stopPos = i + 1;
+		}
+		else if (i == positionFound.at(2))
+		{
+			for (int j = stopPos; j < i; j++)
+			{
+				q += separatedStatement.at(j);
+				q += " ";
+			}
+			stopPos = i + 1;
+		}
+		else if (i == positionFound.at(3))
+		{
+			for (int j = stopPos; j < i; j++)
+			{
+				r += separatedStatement.at(j);
+				r += " ";
+			}
+			stopPos = i + 1;
+		}
+		else if (i == separatedStatement.size())
+		{
+			for (int j = stopPos; j < i; j++)
+			{
+				s += separatedStatement.at(j);
+				s += " ";
+			}
+			stopPos = i + 1;
+		}
 	}
 
 
-	
-	
-	
-	return "poopy doesn't worky... yet";
+	cout << "p = " << p << endl;
+	cout << " q = " << q << endl;
+	cout << "r = " << r << endl;
+	cout << " s = " << s << endl;
+
+	return ":p";
 }
