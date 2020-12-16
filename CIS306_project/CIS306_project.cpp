@@ -32,6 +32,8 @@ int main()
 		q = "";
 		s = "";
 		r = "";
+
+		cout << endl;
 		cout << "statements at " << i << endl << statements.at(i) << endl << endl;
 
 		convertStatement(statements.at(i), p, q, s, r);
@@ -119,6 +121,11 @@ string convertStatement(string statement, string& p, string& q, string& r, strin
 	vector<string> newStatement;
 	string temp;
 
+	p = "";
+	q = "";
+	r = "";
+	s = "";
+
 	//code to separate our statement into separate words to make it easier to translate
 	//scan through statement, if we find a space push our word to our separatedStatement vector else if the next char is a letter add it to our word
 	//Keep track of our last space position so that after the for loop we can add the last word to our vector
@@ -146,6 +153,7 @@ string convertStatement(string statement, string& p, string& q, string& r, strin
 		{
 			if (separatedStatement.at(0) == "and" || separatedStatement.at(0) == "or" || separatedStatement.at(0) == "then")
 			{
+				operation.push_back(separatedStatement.at(0));
 				newStatement.push_back(temp);
 				temp = "";
 			}
@@ -164,21 +172,51 @@ string convertStatement(string statement, string& p, string& q, string& r, strin
 		cout << "Error not an If statement" << endl;
 	}
 
+	for (int i = 0; i < operation.size(); i++)
+	{
+		if (operation.at(i) == "and")
+		{
+			operation.at(i) = "&";
+		}
+		else if (operation.at(i) == "or")
+		{
+			operation.at(i) = "V";
+		}
+		else if (operation.at(i) == "then")
+		{
+			operation.at(i) = "->";
+		}
+	}
 
 	if (newStatement.size() == 1)
 	{
 		p = newStatement.at(0);
+
+		cout << "p = " << p << endl;
+
+		cout << "converted statement = " << " p " << endl;
 	}
 	else if (newStatement.size() == 2)
 	{
 		p = newStatement.at(0);
 		q = newStatement.at(1);
+
+		cout << "p = " << p << endl;
+		cout << " q = " << q << endl;
+
+		cout << "converted statement = " << " p " << operation.at(0) << " q " << endl;
 	}
 	else if (newStatement.size() == 3)
 	{
 		p = newStatement.at(0);
 		q = newStatement.at(1);
 		r = newStatement.at(2);
+
+		cout << "p = " << p << endl;
+		cout << " q = " << q << endl;
+		cout << "r = " << r << endl;
+
+		cout << "converted statement = " << " p " << operation.at(0) << " q " << operation.at(1) << " r " << endl;
 	}
 	else if (newStatement.size() == 4)
 	{
@@ -186,12 +224,17 @@ string convertStatement(string statement, string& p, string& q, string& r, strin
 		q = newStatement.at(1);
 		r = newStatement.at(2);
 		s = newStatement.at(3);
+
+		cout << "p = " << p << endl;
+		cout << " q = " << q << endl;
+		cout << "r = " << r << endl;
+		cout << " s = " << s << endl;
+
+		cout << "converted statement = " << " p " << operation.at(0) << " q " << operation.at(1) << " r " << operation.at(2) << " s " << endl;
 	}
 
-	cout << "p = " << p << endl;
-	cout << " q = " << q << endl;
-	cout << "r = " << r << endl;
-	cout << " s = " << s << endl;
+	
+
 
 	return ":p";
 }
