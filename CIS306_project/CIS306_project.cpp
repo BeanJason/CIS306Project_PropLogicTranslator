@@ -14,19 +14,29 @@ string convertStatement(string, string&, string&, string&, string&);
 int main()
 {
 	//declare a vector called statements and initialize it with a size of 1
-	vector<string> statements(1);
+	vector<string> statements;
 
 	//strings for the parts of our equation
 	string p;
 	string q;
 	string s;
 	string r;
+	
 
 	//read in our data from our file and store it in the statements vector
 	readfile(statements);
-	cout << "statements at 1 " << endl << statements.at(1) << endl << endl;
 
-	convertStatement(statements.at(1), p, q, s, r);
+	for (int i = 0; i < statements.size(); i++)
+	{
+		p = "";
+		q = "";
+		s = "";
+		r = "";
+		cout << "statements at " << i << endl << statements.at(i) << endl << endl;
+
+		convertStatement(statements.at(i), p, q, s, r);
+	}
+	
 
 
 	system("pause");
@@ -39,6 +49,8 @@ void readfile(vector<string>& statements)
 	string LineOfText;
 	string fileName;
 	string statement;
+
+	string temp;
 
 	//int delimPos;
 	int numData = 0;
@@ -56,10 +68,7 @@ void readfile(vector<string>& statements)
 	if (inputFile)
 	{
 		cout << "file open" << endl;
-		//output << "file open" << endl;
-
-
-		//cout << LineOfText << endl;
+		
 
 		//get data on each line, store LineOfText in element, repeat until last line
 		while (getline(inputFile, LineOfText)) {
@@ -85,7 +94,7 @@ void readfile(vector<string>& statements)
 string convertStatement(string statement, string& p, string& q, string& r, string& s)
 {
 	//store statement as individual words
-	vector<string> separatedStatement(1);
+	vector<string> separatedStatement;
 	string word = "";
 	int size = 0;
 	int lastSpacePosition = 0;
@@ -100,7 +109,15 @@ string convertStatement(string statement, string& p, string& q, string& r, strin
 	vector<int> positionFound;
 	int stopPos;
 
+	bool firstRun = false;
+	bool secondRun = false;
+	bool thirdRun = false;
+	bool fourthRun = false;
+	int pos = 0;
 
+	vector<string> operation;
+	vector<string> newStatement;
+	string temp;
 
 	//code to separate our statement into separate words to make it easier to translate
 	//scan through statement, if we find a space push our word to our separatedStatement vector else if the next char is a letter add it to our word
@@ -121,60 +138,55 @@ string convertStatement(string statement, string& p, string& q, string& r, strin
 
 	separatedStatement.push_back(statement.substr(lastSpacePosition, statement.length()));
 
-	//fill a vector with the position of each condition
-	for (int i = 0; i < separatedStatement.size(); i++)
+	if (separatedStatement.at(0) == "If")
 	{
-		if (separatedStatement.at(i) == "and" || separatedStatement.at(i) == "or" || separatedStatement.at(i) == "then" || separatedStatement.at(i) == "If")
+		separatedStatement.erase(separatedStatement.begin());
+
+		while (!separatedStatement.empty())
 		{
-			positionFound.push_back(i);
+			if (separatedStatement.at(0) == "and" || separatedStatement.at(0) == "or" || separatedStatement.at(0) == "then")
+			{
+				newStatement.push_back(temp);
+				temp = "";
+			}
+			else
+			{
+				temp += separatedStatement.at(0);
+				temp += " ";
+			}
+			separatedStatement.erase(separatedStatement.begin());
 		}
+		newStatement.push_back(temp);
+		temp = "";
+	}
+	else
+	{
+		cout << "Error not an If statement" << endl;
 	}
 
 
-	//now that we have a value for each position of the conditions we can start adding words to each of our strings
-	//start by looping through our entire statement
-	//next if we land on one of the poitions of a condition begin another for loop to add the words from our last postion to i
-	//keep track of where we left off with the stopPos variable so we know where to begin in the next iteration
-	for (int i = 0; i <= separatedStatement.size(); i++)
+	if (newStatement.size() == 1)
 	{
-		if (i == positionFound.at(1))
-		{
-			for (int j = 0; j < i; j++)
-			{
-				p += separatedStatement.at(j);
-				p += " ";
-			}
-			stopPos = i + 1;
-		}
-		else if (i == positionFound.at(2))
-		{
-			for (int j = stopPos; j < i; j++)
-			{
-				q += separatedStatement.at(j);
-				q += " ";
-			}
-			stopPos = i + 1;
-		}
-		else if (i == positionFound.at(3))
-		{
-			for (int j = stopPos; j < i; j++)
-			{
-				r += separatedStatement.at(j);
-				r += " ";
-			}
-			stopPos = i + 1;
-		}
-		else if (i == separatedStatement.size())
-		{
-			for (int j = stopPos; j < i; j++)
-			{
-				s += separatedStatement.at(j);
-				s += " ";
-			}
-			stopPos = i + 1;
-		}
+		p = newStatement.at(0);
 	}
-
+	else if (newStatement.size() == 2)
+	{
+		p = newStatement.at(0);
+		q = newStatement.at(1);
+	}
+	else if (newStatement.size() == 3)
+	{
+		p = newStatement.at(0);
+		q = newStatement.at(1);
+		r = newStatement.at(2);
+	}
+	else if (newStatement.size() == 4)
+	{
+		p = newStatement.at(0);
+		q = newStatement.at(1);
+		r = newStatement.at(2);
+		s = newStatement.at(3);
+	}
 
 	cout << "p = " << p << endl;
 	cout << " q = " << q << endl;
