@@ -9,7 +9,7 @@
 using namespace std;
 
 void readfile(vector<string>&);
-string convertStatement(string, string&, string&, string&, string&);
+void convertStatement(string, string&, string&, string&, string&);
 
 int main()
 {
@@ -61,8 +61,6 @@ void readfile(vector<string>& statements)
 	cout << "Please enter the name of input file: " << endl;
 	cin >> fileName;
 
-
-
 	inputFile.open(fileName);
 
 
@@ -87,13 +85,13 @@ void readfile(vector<string>& statements)
 		//output << "Error file not found" << endl;
 	}
 
-	if (numData == 0)
+	if (statements.empty() == true)
 	{
 		cout << "Error File Empty" << endl;
 	}
 }
 
-string convertStatement(string statement, string& p, string& q, string& r, string& s)
+void convertStatement(string statement, string& p, string& q, string& r, string& s)
 {
 	//store statement as individual words
 	vector<string> separatedStatement;
@@ -102,20 +100,7 @@ string convertStatement(string statement, string& p, string& q, string& r, strin
 	int lastSpacePosition = 0;
 	int counter = 0;
 	string convertedStatement;
-
-	bool thenFound = false;
-	bool conditionFound = false;
-	vector<string> statementPart1;
-	vector<string> statementPart2;
-
-	vector<int> positionFound;
-	int stopPos;
-
-	bool firstRun = false;
-	bool secondRun = false;
-	bool thirdRun = false;
-	bool fourthRun = false;
-	int pos = 0;
+	
 
 	vector<string> operation;
 	vector<string> newStatement;
@@ -125,6 +110,8 @@ string convertStatement(string statement, string& p, string& q, string& r, strin
 	q = "";
 	r = "";
 	s = "";
+	vector<string> notFound{"", "", "", ""};
+	int notCount = 0;
 
 	//code to separate our statement into separate words to make it easier to translate
 	//scan through statement, if we find a space push our word to our separatedStatement vector else if the next char is a letter add it to our word
@@ -143,8 +130,20 @@ string convertStatement(string statement, string& p, string& q, string& r, strin
 		}
 	}
 
+	//separatedStatement now holds each word in our statement
 	separatedStatement.push_back(statement.substr(lastSpacePosition, statement.length()));
 
+	//this chunk will scan through our separated statement and result in the positions of our operations (and, or, then) to be stored in our operation vector and 
+	//our conditions being stored in our newStatement vector
+
+	//start by checking if our separated statement is an If statement, if not print error
+	//after each word is checked erase it from the begining of our separatedStatement vector
+	//while our separated statement array isn't empty
+	//If the word is not an operation (and, or, then) add it to our temp string
+	//If it is an operation push the temp string to our newStatement vector
+	//we must also account for the not condition, if we run into a not still store it in the temp string but also change the value of our notFound vec at our notCount position
+	//the notCount position will increase by one everytime a not gets added or it a condition is found
+	//at the end of the loop don't forget to move the left over phrase stored in temp to the last position of newStatement
 	if (separatedStatement.at(0) == "If")
 	{
 		separatedStatement.erase(separatedStatement.begin());
@@ -156,9 +155,15 @@ string convertStatement(string statement, string& p, string& q, string& r, strin
 				operation.push_back(separatedStatement.at(0));
 				newStatement.push_back(temp);
 				temp = "";
+				notCount++;
 			}
 			else
 			{
+				if (separatedStatement.at(0) == "not")
+				{
+					notFound.at(notCount) = " -";
+					notCount++;
+				}
 				temp += separatedStatement.at(0);
 				temp += " ";
 			}
@@ -172,6 +177,7 @@ string convertStatement(string statement, string& p, string& q, string& r, strin
 		cout << "Error not an If statement" << endl;
 	}
 
+	//convert the condition to their symbols 
 	for (int i = 0; i < operation.size(); i++)
 	{
 		if (operation.at(i) == "and")
@@ -188,13 +194,20 @@ string convertStatement(string statement, string& p, string& q, string& r, strin
 		}
 	}
 
+	//print our statement 
+	//statemnt will depend on the size of new statement
+	//if there's 1 index we only have a p, if there's 2 we have p, and q... ect.
+
+	//print the value of notfound at the postion of the next printed condition
+	//print the variable of the next condition
+	//finally print the operation at the conditions index
 	if (newStatement.size() == 1)
 	{
 		p = newStatement.at(0);
 
 		cout << "p = " << p << endl;
 
-		cout << "converted statement = " << " p " << endl;
+		cout << "converted statement = " << notFound.at(0) << " p " << endl;
 	}
 	else if (newStatement.size() == 2)
 	{
@@ -204,7 +217,7 @@ string convertStatement(string statement, string& p, string& q, string& r, strin
 		cout << "p = " << p << endl;
 		cout << " q = " << q << endl;
 
-		cout << "converted statement = " << " p " << operation.at(0) << " q " << endl;
+		cout << "converted statement = " << notFound.at(0) << " p " << operation.at(0) << notFound.at(1) << " q " << endl;
 	}
 	else if (newStatement.size() == 3)
 	{
@@ -216,7 +229,7 @@ string convertStatement(string statement, string& p, string& q, string& r, strin
 		cout << " q = " << q << endl;
 		cout << "r = " << r << endl;
 
-		cout << "converted statement = " << " p " << operation.at(0) << " q " << operation.at(1) << " r " << endl;
+		cout << "converted statement = " << notFound.at(0) << " p " << operation.at(0) << notFound.at(1) << " q " << operation.at(1) << notFound.at(2) << " r " << endl;
 	}
 	else if (newStatement.size() == 4)
 	{
@@ -230,11 +243,7 @@ string convertStatement(string statement, string& p, string& q, string& r, strin
 		cout << "r = " << r << endl;
 		cout << " s = " << s << endl;
 
-		cout << "converted statement = " << " p " << operation.at(0) << " q " << operation.at(1) << " r " << operation.at(2) << " s " << endl;
+		cout << "converted statement = " << notFound.at(0) << " p " << operation.at(0) << notFound.at(1) << " q " << operation.at(1) << notFound.at(2) << " r " << operation.at(2) << notFound.at(3) << " s " << endl;
 	}
 
-	
-
-
-	return ":p";
 }
